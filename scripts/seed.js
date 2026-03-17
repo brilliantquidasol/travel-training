@@ -65,6 +65,26 @@ async function seed() {
     console.log('  ✓', inserted.title);
   }
 
+  console.log('\nSeeding destinations...');
+  if (data.destinations && data.destinations.length > 0) {
+    for (const d of data.destinations) {
+      const { error } = await supabase.from('destinations').insert({
+        slug: d.slug,
+        title: d.title,
+        subtitle: d.subtitle,
+        image: d.image,
+        description: d.description,
+      });
+      if (error) {
+        console.error('  ✗ Destination:', d.title, error.message);
+      } else {
+        console.log('  ✓', d.title);
+      }
+    }
+  } else {
+    console.log('  (no destinations in seed data)');
+  }
+
   console.log('\nSeeding bookings...');
   for (const b of data.bookings) {
     const tourId = titleToId[b.tour_title];
@@ -85,7 +105,32 @@ async function seed() {
     }
   }
 
-  console.log('\nDone. Tours:', data.tours.length, '| Bookings:', data.bookings.length);
+  console.log('\nSeeding orders...');
+  if (data.orders && data.orders.length > 0) {
+    for (const o of data.orders) {
+      const tourId = o.tour_title ? titleToId[o.tour_title] : null;
+      const { error } = await supabase.from('orders').insert({
+        customer_name: o.customer_name,
+        customer_email: o.customer_email,
+        ...(tourId && { tour_id: tourId }),
+        amount: o.amount,
+        currency: o.currency || 'USD',
+        status: o.status || 'pending',
+        notes: o.notes || null,
+      });
+      if (error) {
+        console.error('  ✗ Order:', o.customer_name, error.message);
+      } else {
+        console.log('  ✓', o.customer_name, '→', o.tour_title || '—');
+      }
+    }
+  } else {
+    console.log('  (no orders in seed data)');
+  }
+
+  const destCount = data.destinations?.length ?? 0;
+  const orderCount = data.orders?.length ?? 0;
+  console.log('\nDone. Tours:', data.tours.length, '| Destinations:', destCount, '| Bookings:', data.bookings.length, '| Orders:', orderCount);
 }
 
 seed().catch((err) => {

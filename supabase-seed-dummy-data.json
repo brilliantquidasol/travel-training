@@ -88,6 +88,22 @@
     { "tour_title": "Maldives Overwater Bungalow Escape", "name": "Chris Lee", "email": "chris.lee@email.com", "date": "2026-09-20" },
     { "tour_title": "Japan Cultural Journey: Tokyo to Kyoto", "name": "Fatima Al-Hassan", "email": "fatima.alhassan@email.com", "date": "2026-11-25" }
   ],
+  "destinations": [
+    { "slug": "eiffel-tower", "title": "Eiffel Tower", "subtitle": "Paris, 24 Trips", "image": "https://images.unsplash.com/photo-1511739001846-f6e619875431?w=800&h=600&fit=crop", "description": "The Eiffel Tower is one of the most iconic landmarks in the world. Experience Paris from above with stunning views of the city. Our tours include skip-the-line access, guided visits, and optional evening experiences." },
+    { "slug": "pryde-mountains", "title": "Pryde Mountains", "subtitle": "Prydelands, 100 Trips", "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=600&fit=crop", "description": "Explore the dramatic landscapes of the Pryde Mountains. From hiking and climbing to scenic drives, we offer a range of trips for every level. Discover pristine nature and unforgettable vistas." },
+    { "slug": "lao-lading-island", "title": "Lao Lading Island", "subtitle": "Krabal, 12 Trips", "image": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop", "description": "Lao Lading Island is a tropical paradise with crystal-clear waters and white sand beaches. Join our island-hopping tours, snorkeling trips, or simply relax and unwind in this idyllic setting." },
+    { "slug": "ton-kwen-temple", "title": "Ton Kwen Temple", "subtitle": "Thailand, 20 Trips", "image": "https://images.unsplash.com/photo-1528181304800-259b08848526?w=800&h=600&fit=crop", "description": "Discover the ancient beauty of Ton Kwen Temple and the rich culture of Thailand. Our tours combine temple visits with local experiences, markets, and authentic cuisine." },
+    { "slug": "bali-indonesia", "title": "Bali, Indonesia", "subtitle": "Indonesia, 50 Trips", "image": "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&h=600&fit=crop", "description": "Bali offers something for everyone: lush rice terraces, sacred temples, vibrant culture, and stunning beaches. Choose from adventure, wellness, or cultural tours tailored to your interests." }
+  ],
+  "orders": [
+    { "tour_title": "Everest Base Camp Trek", "customer_name": "Sarah Mitchell", "customer_email": "sarah.mitchell@email.com", "amount": 3798, "currency": "USD", "status": "paid", "notes": "2 adults, flexible on dates" },
+    { "tour_title": "Serengeti & Ngorongoro Safari", "customer_name": "James Okonkwo", "customer_email": "james.o@email.com", "amount": 4998, "currency": "USD", "status": "completed", "notes": "Honeymoon safari" },
+    { "tour_title": "Maldives Overwater Bungalow Escape", "customer_name": "Emma Watson", "customer_email": "emma.w@email.com", "amount": 3299, "currency": "USD", "status": "pending", "notes": null },
+    { "tour_title": "European Highlights: Paris, Rome & Barcelona", "customer_name": "Carlos Mendez", "customer_email": "carlos.m@email.com", "amount": 3198, "currency": "USD", "status": "paid", "notes": "Family of 4" },
+    { "tour_title": "Inca Trail to Machu Picchu", "customer_name": "Nina Petrov", "customer_email": "nina.p@email.com", "amount": 2598, "currency": "USD", "status": "completed", "notes": "Private guide requested" },
+    { "tour_title": "Japan Cultural Journey: Tokyo to Kyoto", "customer_name": "Wei Zhang", "customer_email": "wei.z@email.com", "amount": 4598, "currency": "USD", "status": "paid", "notes": "Upgrade to business class flights" },
+    { "tour_title": "Iceland Ring Road Adventure", "customer_name": "Olivia Brown", "customer_email": "olivia.b@email.com", "amount": 3598, "currency": "USD", "status": "cancelled", "notes": "Rescheduled to next year" }
+  ],
   "admin_users": [
     { "email": "admin@travelapp.com", "password": "Admin123!", "note": "Create in Supabase: Authentication → Users → Add user" },
     { "email": "editor@travelapp.com", "password": "Editor123!", "note": "Create in Supabase: Authentication → Users → Add user" }
