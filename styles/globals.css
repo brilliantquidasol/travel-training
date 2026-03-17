@@ -19,12 +19,12 @@ a {
 
 /* Section spacing - use .section for consistent top/bottom padding */
 .section {
-  @apply py-16 md:py-24;
+  @apply py-20 md:py-28;
 }
 
-/* Primary button - consistent hover/focus */
+/* Primary button - consistent hover/focus (hover:text-white overrides global a:hover) */
 .btn-primary {
-  @apply inline-block bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg px-5 py-2.5 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
+  @apply inline-block bg-primary-500 hover:bg-primary-600 text-white hover:text-white font-semibold rounded-lg px-5 py-2.5 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
 }
 
 .btn-primary-lg {
@@ -33,7 +33,7 @@ a {
 
 /* Secondary/outline button (e.g. Subscribe section) */
 .btn-secondary {
-  @apply inline-block bg-white hover:bg-gray-100 text-primary-600 font-semibold rounded-lg px-5 py-2.5 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-primary-500;
+  @apply inline-block bg-white hover:bg-gray-100 text-primary-600 hover:text-primary-600 font-semibold rounded-lg px-5 py-2.5 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-primary-500;
 }
 
 /* Glassmorphism card - for tour cards and similar */

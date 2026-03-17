@@ -12,8 +12,17 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { tour_id, name, email } = req.body;
-    const { data, error } = await supabase.from('bookings').insert([{ tour_id, name, email }]);
+    const { tour_id, name, email, phone, guests, preferred_date, special_requests } = req.body;
+    const payload = {
+      tour_id,
+      name,
+      email,
+      ...(phone != null && phone !== '' && { phone }),
+      ...(guests != null && guests !== '' && { guests: parseInt(guests, 10) }),
+      ...(preferred_date != null && preferred_date !== '' && { preferred_date }),
+      ...(special_requests != null && special_requests !== '' && { special_requests }),
+    };
+    const { data, error } = await supabase.from('bookings').insert([payload]);
     if (error) return res.status(500).json({ error: error.message });
     res.status(201).json(data);
     return;

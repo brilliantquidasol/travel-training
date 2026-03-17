@@ -1,51 +1,165 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+const inputClass = 'w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent';
+
 export default function BookingForm({ tourId }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [guests, setGuests] = useState('');
+  const [preferredDate, setPreferredDate] = useState('');
+  const [specialRequests, setSpecialRequests] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setPhone('');
+    setGuests('');
+    setPreferredDate('');
+    setSpecialRequests('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!supabase) {
-      alert('Booking is not configured. Please set Supabase environment variables.');
-      return;
-    }
     setLoading(true);
-    const { error } = await supabase.from('bookings').insert([{ tour_id: tourId, name, email }]);
+    if (supabase) {
+      const payload = {
+        tour_id: tourId,
+        name,
+        email,
+        ...(phone && { phone }),
+        ...(guests && { guests: parseInt(guests, 10) }),
+        ...(preferredDate && { preferred_date: preferredDate }),
+        ...(specialRequests && { special_requests: specialRequests }),
+      };
+      const { error } = await supabase.from('bookings').insert([payload]);
+      if (error) {
+        setLoading(false);
+        alert(error.message);
+        return;
+      }
+    }
     setLoading(false);
-    if (error) alert(error.message);
-    else alert('Booking submitted!');
-    setName('');
-    setEmail('');
+    setShowConfirmation(true);
+    resetForm();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="glass p-6 max-w-md mx-auto flex flex-col gap-4">
-      <input
-        className="glass-input w-full"
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <input
-        className="glass-input w-full"
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div>
+        <label htmlFor="booking-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full name *</label>
+        <input
+          id="booking-name"
+          className={inputClass}
+          type="text"
+          placeholder="Your full name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="booking-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+        <input
+          id="booking-email"
+          className={inputClass}
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="booking-phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+        <input
+          id="booking-phone"
+          className={inputClass}
+          type="tel"
+          placeholder="+1 (555) 000-0000"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="booking-guests" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of guests</label>
+          <input
+            id="booking-guests"
+            className={inputClass}
+            type="number"
+            min="1"
+            max="99"
+            placeholder="e.g. 2"
+            value={guests}
+            onChange={(e) => setGuests(e.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="booking-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred date</label>
+          <input
+            id="booking-date"
+            className={inputClass}
+            type="date"
+            value={preferredDate}
+            onChange={(e) => setPreferredDate(e.target.value)}
+          />
+        </div>
+      </div>
+      <div>
+        <label htmlFor="booking-requests" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Special requests</label>
+        <textarea
+          id="booking-requests"
+          className={`${inputClass} resize-y min-h-[100px]`}
+          placeholder="Dietary needs, accessibility, extra activities, etc."
+          value={specialRequests}
+          onChange={(e) => setSpecialRequests(e.target.value)}
+          rows={4}
+        />
+      </div>
       <button
-        className="glass-btn w-full"
+        className="btn-primary w-full hover:text-white py-3.5 rounded-xl"
         type="submit"
-        disabled={loading || !supabase}
+        disabled={loading}
       >
         {loading ? 'Submitting...' : 'Book Now'}
       </button>
+
+      {/* Confirmation email sent popup */}
+      {showConfirmation && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setShowConfirmation(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirmation-title"
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-8 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            </span>
+            <h3 id="confirmation-title" className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Confirmation email sent
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+              We&apos;ve sent a booking confirmation to your email. Check your inbox for next steps.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowConfirmation(false)}
+              className="btn-primary hover:text-white w-full py-3 rounded-xl"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

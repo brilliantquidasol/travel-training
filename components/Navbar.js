@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
 
   const navLinkClass = 'text-white hover:text-white/80 transition text-sm font-medium';
   const mobileLinkClass = 'block text-white hover:bg-white/10 rounded px-3 py-2 transition';
@@ -28,27 +27,9 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-8">
             <Link href="/" className={navLinkClass}>Home</Link>
             <Link href="/about" className={navLinkClass}>About Us</Link>
-            <Link href="#destinations" className={navLinkClass}>Destinations</Link>
+            <Link href="/destinations" className={navLinkClass}>Destinations</Link>
             <Link href="#tours" className={navLinkClass}>Tours</Link>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setMoreOpen(!moreOpen)}
-                className={`flex items-center gap-1 ${navLinkClass}`}
-              >
-                More
-                <svg className="w-4 h-4 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {moreOpen && (
-                <div className="absolute top-full right-0 mt-1 py-2 w-40 bg-[#1F2D3D] border border-white/10 rounded shadow-lg z-50">
-                  <Link href="/signup" className="block px-4 py-2 text-white hover:bg-white/10 text-sm" onClick={() => setMoreOpen(false)}>Sign Up</Link>
-                  <Link href="/admin/dashboard" className="block px-4 py-2 text-white hover:bg-white/10 text-sm" onClick={() => setMoreOpen(false)}>Admin</Link>
-                </div>
-              )}
-            </div>
-            <Link href="/contact" className={navLinkClass}>Contacts</Link>
+            <Link href="/contact" className={navLinkClass}>Contact Us</Link>
           </div>
 
           {/* Right - Icons + phone */}
@@ -63,11 +44,6 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </Link>
-            <button type="button" className="text-white hover:text-white/80 transition p-1" aria-label="Language">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0h.5a2.5 2.5 0 002.5-2.5V3.935M12 12a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v1a2 2 0 002 2h2z" />
-              </svg>
-            </button>
             <a href="tel:+8123985789" className="text-white hover:text-white/80 transition text-sm font-medium whitespace-nowrap">
               +8 (123) 985 789
             </a>
@@ -99,9 +75,9 @@ export default function Navbar() {
         <div className="lg:hidden bg-[#1F2D3D] border-t border-white/10 px-4 py-4 space-y-2">
           <Link href="/" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Home</Link>
           <Link href="/about" className={mobileLinkClass} onClick={() => setIsOpen(false)}>About Us</Link>
-          <Link href="#destinations" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Destinations</Link>
+          <Link href="/destinations" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Destinations</Link>
           <Link href="#tours" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Tours</Link>
-          <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Contacts</Link>
+          <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Contact Us</Link>
           <Link href="/signup" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Sign Up</Link>
           <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Admin</Link>
           <a href="tel:+8123985789" className="block text-white/90 py-2">+8 (123) 985 789</a>

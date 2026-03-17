@@ -64,14 +64,14 @@ export default function Landing({ tours }) {
           <img src={referenceAssets.hero} alt="" className="w-full h-full object-cover object-top" />
           <div className="absolute inset-0 bg-black/40" />
         </div>
-        <div className="relative z-10 px-4 pt-24 pb-24 w-full max-w-4xl mx-auto">
+        <div className="relative z-10 px-4 pt-28 pb-28 md:pt-32 md:pb-32 w-full max-w-4xl mx-auto">
           <p className="text-sm sm:text-base uppercase tracking-[0.2em] text-white/90 mb-4">
             Let&apos;s Travel The World With Us
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-10 text-white tracking-tight">
             Travel Top Destination of The World
           </h1>
-          <form className="bg-white rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-4xl mx-auto relative" onSubmit={(e) => e.preventDefault()}>
+          <form className="bg-white rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-3xl mx-auto relative" onSubmit={(e) => e.preventDefault()}>
             <div className="flex-1 flex flex-col sm:flex-row sm:divide-x divide-gray-200 relative">
               {/* Destinations with suggestions */}
               <div className="flex-1 relative flex items-center">
@@ -146,16 +146,18 @@ export default function Landing({ tours }) {
                 )}
               </div>
             </div>
-            <button type="submit" className="btn-primary px-6 py-3.5 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 flex-shrink-0">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              Find Now
+            <button type="submit" className="btn-primary rounded-xl shrink-0 py-3.5 px-4 text-sm">
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ minWidth: 'max-content' }}>
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                Find Now
+              </span>
             </button>
           </form>
         </div>
       </section>
 
       {/* 2. About Us - exact reference copy */}
-      <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="about" className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-14 items-center">
           <div className="relative flex justify-center min-h-[320px]">
             <div className="relative w-64 h-64 md:w-72 md:h-72">
@@ -321,7 +323,7 @@ export default function Landing({ tours }) {
       </section>
 
       {/* 9. Our Journey in Videos */}
-      <section className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] overflow-hidden">
+      <section className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] section overflow-hidden">
         <img src={referenceAssets.videoBg} alt="" className="w-full min-h-[420px] object-cover" />
         <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
           <p className="text-white/90 text-sm uppercase tracking-[0.2em] mb-2">Our Journey in Videos</p>
@@ -370,8 +372,8 @@ export default function Landing({ tours }) {
         </div>
       </section>
 
-      {/* Subscribe Now */}
-      <section className="section bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 relative overflow-hidden">
+      {/* Subscribe Now / Contact */}
+      <section id="contact" className="section bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-80" aria-hidden />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
