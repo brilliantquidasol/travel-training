@@ -8,6 +8,10 @@ export default function BookingForm({ tourId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!supabase) {
+      alert('Booking is not configured. Please set Supabase environment variables.');
+      return;
+    }
     setLoading(true);
     const { data, error } = await supabase.from('bookings').insert([
       { tour_id: tourId, name, email },
@@ -37,7 +41,7 @@ export default function BookingForm({ tourId }) {
       />
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !supabase}
         className="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700 disabled:opacity-50 transition"
       >
         {loading ? 'Submitting...' : 'Book Now'}
