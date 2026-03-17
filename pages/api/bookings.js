@@ -5,20 +5,25 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: 'Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' });
   }
   if (req.method === 'GET') {
-    const { data, error } = await supabase.from('bookings').select('*');
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*, tour:tours(title)')
+      .order('id', { ascending: false });
     if (error) return res.status(500).json({ error: error.message });
-    res.status(200).json(data);
+    res.status(200).json(data || []);
     return;
   }
 
   if (req.method === 'POST') {
-    const { tour_id, name, email, preferred_date } = req.body;
-    // Only send columns that exist in the bookings table (tour_id, name, email, date)
+    const { tour_id, name, email, preferred_date, phone, guests, special_requests } = req.body;
     const payload = {
-      name,
-      email,
+      name: name ?? '',
+      email: email ?? '',
       ...(tour_id != null && tour_id !== '' && { tour_id }),
       ...(preferred_date != null && preferred_date !== '' && { date: preferred_date }),
+      ...(phone != null && phone !== '' && { phone }),
+      ...(guests != null && guests !== '' && { guests: parseInt(guests, 10) }),
+      ...(special_requests != null && special_requests !== '' && { special_requests }),
     };
     const { data, error } = await supabase.from('bookings').insert([payload]);
     if (error) return res.status(500).json({ error: error.message });

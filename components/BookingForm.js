@@ -36,7 +36,7 @@ export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
         email,
         ...(phone && { phone }),
         ...(guests && { guests: parseInt(guests, 10) }),
-        ...(preferredDate && { preferred_date: preferredDate }),
+        ...(preferredDate && { date: preferredDate }),
         ...(finalRequests && { special_requests: finalRequests }),
       };
       const { error } = await supabase.from('bookings').insert([payload]);
