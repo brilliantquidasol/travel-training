@@ -14,9 +14,9 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { tour_id, name, email, phone, guests, preferred_date, special_requests } = req.body;
     const payload = {
-      tour_id,
       name,
       email,
+      ...(tour_id != null && tour_id !== '' && { tour_id }),
       ...(phone != null && phone !== '' && { phone }),
       ...(guests != null && guests !== '' && { guests: parseInt(guests, 10) }),
       ...(preferred_date != null && preferred_date !== '' && { preferred_date }),

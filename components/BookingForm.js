@@ -3,7 +3,10 @@ import { supabase } from '../lib/supabase';
 
 const inputClass = 'w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent';
 
-export default function BookingForm({ tourId }) {
+export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
+  const prefix = [tourLabel, destinationLabel].filter(Boolean).length
+    ? `Tour: ${tourLabel || '—'}, Destination: ${destinationLabel || '—'}\n\n`
+    : '';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,15 +28,16 @@ export default function BookingForm({ tourId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const finalRequests = prefix ? prefix + specialRequests : specialRequests;
     if (supabase) {
       const payload = {
-        tour_id: tourId,
+        ...(tourId != null && tourId !== '' && { tour_id: tourId }),
         name,
         email,
         ...(phone && { phone }),
         ...(guests && { guests: parseInt(guests, 10) }),
         ...(preferredDate && { preferred_date: preferredDate }),
-        ...(specialRequests && { special_requests: specialRequests }),
+        ...(finalRequests && { special_requests: finalRequests }),
       };
       const { error } = await supabase.from('bookings').insert([payload]);
       if (error) {
@@ -109,6 +113,12 @@ export default function BookingForm({ tourId }) {
           />
         </div>
       </div>
+      {(tourLabel || destinationLabel) && (
+        <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
+          <span className="font-medium text-gray-700 dark:text-gray-300">Booking for: </span>
+          {[tourLabel, destinationLabel].filter(Boolean).join(' · ')}
+        </div>
+      )}
       <div>
         <label htmlFor="booking-requests" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Special requests</label>
         <textarea
