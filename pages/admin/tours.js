@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import AdminLayout from '../../components/AdminLayout';
 
 export default function AdminToursPage() {
   const [tours, setTours] = useState([]);
@@ -35,54 +36,58 @@ export default function AdminToursPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10">
-      <Link href="/admin/dashboard" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
-        ← Dashboard
-      </Link>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manage tours & packages</h1>
+    <AdminLayout>
+    <div className="max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Tours & packages</h1>
+          <p className="mt-1 text-slate-600 text-sm">Create and manage tour packages with itineraries, pricing, highlights, and booking.</p>
+        </div>
         <Link
           href="/admin/tours/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="inline-flex items-center justify-center rounded-lg bg-teal-600 text-white px-4 py-2.5 text-sm font-medium hover:bg-teal-700 transition-colors"
         >
           Create tour
         </Link>
       </div>
-      <p className="text-gray-600 mb-4">Create and manage tour packages with itineraries, pricing, duration, highlights, galleries, and booking. Use the Live Page Builder when editing to design tour pages.</p>
       {loading ? (
-        <p className="text-gray-500">Loading...</p>
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+          Loading...
+        </div>
       ) : tours.length === 0 ? (
-        <p className="text-gray-500">No tours yet. Create your first tour package.</p>
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+          No tours yet. Create your first tour package.
+        </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {tours.map((tour) => (
             <li
               key={tour.id}
-              className="flex justify-between items-center border rounded-lg p-4 bg-white shadow-sm"
+              className="flex flex-wrap justify-between items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div>
-                <span className="font-medium">{tour.title}</span>
+                <span className="font-medium text-slate-900">{tour.title}</span>
                 {tour.duration && (
-                  <span className="ml-2 text-sm text-gray-500">— {tour.duration}</span>
+                  <span className="ml-2 text-sm text-slate-500">— {tour.duration}</span>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <a
                   href={`/tours/${tour.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 text-sm"
+                  className="text-sm font-medium text-teal-600 hover:text-teal-700"
                 >
                   Preview
                 </a>
-                <Link href={`/admin/tours/edit/${tour.id}`} className="text-blue-600 text-sm">
+                <Link href={`/admin/tours/edit/${tour.id}`} className="text-sm font-medium text-teal-600 hover:text-teal-700">
                   Edit
                 </Link>
                 <button
                   type="button"
                   onClick={() => handleDelete(tour.id, tour.title)}
                   disabled={deleting === tour.id}
-                  className="text-red-600 text-sm disabled:opacity-50"
+                  className="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
                 >
                   {deleting === tour.id ? 'Deleting...' : 'Delete'}
                 </button>
@@ -92,5 +97,6 @@ export default function AdminToursPage() {
         </ul>
       )}
     </div>
+    </AdminLayout>
   );
 }

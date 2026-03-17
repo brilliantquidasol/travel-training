@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import TourForm from '../../../../components/TourForm';
+import AdminLayout from '../../../../components/AdminLayout';
 
 export default function EditTourPage() {
   const router = useRouter();
@@ -39,27 +40,31 @@ export default function EditTourPage() {
     }
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (!tour) return <div className="p-6">Tour not found.</div>;
+  if (loading) return <AdminLayout><div className="max-w-4xl mx-auto p-6 text-slate-500">Loading...</div></AdminLayout>;
+  if (!tour) return <AdminLayout><div className="max-w-4xl mx-auto p-6 text-slate-500">Tour not found.</div></AdminLayout>;
 
   return (
-    <div className="min-h-screen p-6 md:p-10 bg-gray-50">
-      <div className="flex items-center justify-between mb-4">
-        <Link href="/admin/tours" className="text-blue-600 hover:text-blue-800">
-          ← Back to tours
-        </Link>
-        <a
-          href={`/tours/${id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 text-sm"
-        >
-          Preview live page →
-        </a>
+    <AdminLayout>
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <Link href="/admin/tours" className="text-sm font-medium text-slate-500 hover:text-slate-700">
+            ← Tours
+          </Link>
+          <a
+            href={`/tours/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-teal-600 hover:text-teal-700"
+          >
+            Preview live page →
+          </a>
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">Edit tour: {tour.title}</h1>
+        <p className="text-slate-600 mb-6">Live Page Builder — update content below; preview the tour page to see how it looks to travelers.</p>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <TourForm tour={tour} onSave={handleSave} onCancel={() => router.push('/admin/tours')} saving={saving} />
+        </div>
       </div>
-      <h1 className="text-2xl font-bold mb-2">Edit tour: {tour.title}</h1>
-      <p className="text-gray-600 mb-6">Live Page Builder — update content below; preview the tour page to see how it looks to travelers.</p>
-      <TourForm tour={tour} onSave={handleSave} onCancel={() => router.push('/admin/tours')} saving={saving} />
-    </div>
+    </AdminLayout>
   );
 }

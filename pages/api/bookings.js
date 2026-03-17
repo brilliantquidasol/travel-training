@@ -12,15 +12,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { tour_id, name, email, phone, guests, preferred_date, special_requests } = req.body;
+    const { tour_id, name, email, preferred_date } = req.body;
+    // Only send columns that exist in the bookings table (tour_id, name, email, date)
     const payload = {
       name,
       email,
       ...(tour_id != null && tour_id !== '' && { tour_id }),
-      ...(phone != null && phone !== '' && { phone }),
-      ...(guests != null && guests !== '' && { guests: parseInt(guests, 10) }),
-      ...(preferred_date != null && preferred_date !== '' && { preferred_date }),
-      ...(special_requests != null && special_requests !== '' && { special_requests }),
+      ...(preferred_date != null && preferred_date !== '' && { date: preferred_date }),
     };
     const { data, error } = await supabase.from('bookings').insert([payload]);
     if (error) return res.status(500).json({ error: error.message });

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, role, signOut } = useAuth();
 
   const navLinkClass = 'text-white hover:text-white/80 transition text-sm font-medium';
   const mobileLinkClass = 'block text-white hover:bg-white/10 rounded px-3 py-2 transition';
@@ -32,18 +34,29 @@ export default function Navbar() {
             <Link href="/contact" className={navLinkClass}>Contact Us</Link>
           </div>
 
-          {/* Right - Icons + phone */}
+          {/* Right - Icons + phone + auth */}
           <div className="hidden lg:flex items-center gap-6">
             <button type="button" className="text-white hover:text-white/80 transition p-1" aria-label="Search">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <Link href="/signup" className="text-white hover:text-white/80 transition p-1" aria-label="Account">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </Link>
+            {user ? (
+              <>
+                <Link href="/account" className={navLinkClass}>Account</Link>
+                {role === 'admin' && (
+                  <Link href="/admin/dashboard" className={navLinkClass}>Admin</Link>
+                )}
+                <button type="button" onClick={() => signOut()} className={navLinkClass}>
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/signin" className={navLinkClass}>Sign In</Link>
+                <Link href="/signup" className={navLinkClass}>Sign Up</Link>
+              </>
+            )}
             <a href="tel:+8123985789" className="text-white hover:text-white/80 transition text-sm font-medium whitespace-nowrap">
               +8 (123) 985 789
             </a>
@@ -78,8 +91,20 @@ export default function Navbar() {
           <Link href="/destinations" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Destinations</Link>
           <Link href="#tours" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Tours</Link>
           <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Contact Us</Link>
-          <Link href="/signup" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Sign Up</Link>
-          <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Admin</Link>
+          {user ? (
+            <>
+              <Link href="/account" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Account</Link>
+              {role === 'admin' && (
+                <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Admin</Link>
+              )}
+              <button type="button" className={mobileLinkClass + ' w-full text-left'} onClick={() => { signOut(); setIsOpen(false); }}>Sign out</button>
+            </>
+          ) : (
+            <>
+              <Link href="/signin" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Sign In</Link>
+              <Link href="/signup" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Sign Up</Link>
+            </>
+          )}
           <a href="tel:+8123985789" className="block text-white/90 py-2">+8 (123) 985 789</a>
         </div>
       )}
