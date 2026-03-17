@@ -1,10 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { user, role, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!searchOpen) setSearchQuery('');
+  }, [searchOpen]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    setSearchOpen(false);
+    router.push(q ? `/?q=${encodeURIComponent(q)}#tours` : '/#tours');
+    setTimeout(() => {
+      const el = document.getElementById('tours');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  };
 
   const navLinkClass = 'text-white hover:text-white/80 transition text-sm font-medium';
   const mobileLinkClass = 'block text-white hover:bg-white/10 rounded px-3 py-2 transition';
@@ -36,13 +55,19 @@ export default function Navbar() {
 
           {/* Right - Icons + phone + auth */}
           <div className="hidden lg:flex items-center gap-6">
-            <button type="button" className="text-white hover:text-white/80 transition p-1" aria-label="Search">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="text-white hover:text-white/80 transition p-1"
+              aria-label="Search"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
             {user ? (
               <>
+                <Link href="/dashboard" className={navLinkClass}>Dashboard</Link>
                 <Link href="/account" className={navLinkClass}>Account</Link>
                 {role === 'admin' && (
                   <Link href="/admin/dashboard" className={navLinkClass}>Admin</Link>
@@ -61,6 +86,44 @@ export default function Navbar() {
               +8 (123) 985 789
             </a>
           </div>
+
+      {/* Search overlay */}
+      {searchOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4 bg-black/60"
+          onClick={() => setSearchOpen(false)}
+          role="dialog"
+          aria-label="Search"
+        >
+          <form
+            onSubmit={handleSearchSubmit}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden"
+          >
+            <div className="flex items-center gap-2 p-3">
+              <span className="text-slate-400 shrink-0" aria-hidden>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tours (destination, title, category)..."
+                className="flex-1 min-w-0 px-2 py-2 text-gray-900 placeholder-gray-500 focus:outline-none"
+                autoFocus
+              />
+              <button type="submit" className="shrink-0 rounded-lg bg-teal-600 text-white px-4 py-2 text-sm font-medium hover:bg-teal-700">
+                Find Now
+              </button>
+              <button type="button" onClick={() => setSearchOpen(false)} className="shrink-0 p-2 text-slate-500 hover:text-slate-700" aria-label="Close">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
           {/* Mobile Hamburger */}
           <div className="lg:hidden flex items-center">
@@ -86,6 +149,9 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="lg:hidden bg-[#1F2D3D] border-t border-white/10 px-4 py-4 space-y-2">
+          <button type="button" className={mobileLinkClass + ' w-full text-left'} onClick={() => { setIsOpen(false); setSearchOpen(true); }}>
+            Search
+          </button>
           <Link href="/" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Home</Link>
           <Link href="/about" className={mobileLinkClass} onClick={() => setIsOpen(false)}>About Us</Link>
           <Link href="/destinations" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Destinations</Link>
@@ -93,6 +159,7 @@ export default function Navbar() {
           <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Contact Us</Link>
           {user ? (
             <>
+              <Link href="/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Dashboard</Link>
               <Link href="/account" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Account</Link>
               {role === 'admin' && (
                 <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Admin</Link>

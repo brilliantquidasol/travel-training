@@ -107,3 +107,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - **Env vars:** In Vercel → Project → Settings → Environment Variables, ensure both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set for Production (and Preview if needed). Then trigger a **Redeploy**.
 - **RLS:** Supabase uses Row Level Security. If you see no tours, run the RLS section of `supabase-setup.sql` in the Supabase SQL Editor (policies that allow public SELECT on `tours` and `bookings`).
+
+### Email rate limit / adding user accounts
+
+If you see **"Email rate limit exceeded"** when signing up, or need to add 2 user accounts without sending emails, see **[docs/USER_ACCOUNTS.md](docs/USER_ACCOUNTS.md)**. Options: add users in Supabase Dashboard, run `node scripts/create-users.js` (with `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`), or disable "Confirm email" in Auth for development.

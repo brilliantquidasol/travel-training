@@ -1,6 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import { IconInquiries } from '../../components/admin/Icons';
+
+const SORT_OPTIONS = [
+  { value: 'created_desc', label: 'Newest first' },
+  { value: 'created_asc', label: 'Oldest first' },
+  { value: 'name_asc', label: 'Name A–Z' },
+  { value: 'name_desc', label: 'Name Z–A' },
+];
+
+function sortInquiries(list, sortBy) {
+  const copy = [...list];
+  switch (sortBy) {
+    case 'created_asc':
+      copy.sort((a, b) => (new Date(a.created_at || a.id) - new Date(b.created_at || b.id)));
+      break;
+    case 'name_asc':
+      copy.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      break;
+    case 'name_desc':
+      copy.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+      break;
+    case 'created_desc':
+    default:
+      copy.sort((a, b) => new Date(b.created_at || b.id) - new Date(a.created_at || a.id));
+      break;
+  }
+  return copy;
+}
 
 function formatDate(val) {
   if (!val) return '—';
@@ -204,6 +231,9 @@ export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewInquiry, setViewInquiry] = useState(null);
+  const [sortBy, setSortBy] = useState('created_desc');
+
+  const sortedInquiries = useMemo(() => sortInquiries(inquiries, sortBy), [inquiries, sortBy]);
 
   const load = () => {
     return fetch('/api/bookings')
@@ -253,8 +283,24 @@ export default function AdminInquiriesPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-slate-500 mb-2">{inquiries.length} {inquiries.length === 1 ? 'inquiry' : 'inquiries'}</p>
-            {inquiries.map((inquiry) => (
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+              <p className="text-sm text-slate-500">
+                {inquiries.length} {inquiries.length === 1 ? 'inquiry' : 'inquiries'}
+              </p>
+              <label className="flex items-center gap-2 text-sm">
+                <span className="text-slate-500">Sort:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {sortedInquiries.map((inquiry) => (
               <InquiryRow
                 key={inquiry.id}
                 inquiry={inquiry}

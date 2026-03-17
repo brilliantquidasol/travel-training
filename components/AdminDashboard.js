@@ -52,19 +52,29 @@ const colorMap = {
 
 export default function AdminDashboard() {
   const [tourCount, setTourCount] = useState(null);
+  const [inquiryCount, setInquiryCount] = useState(null);
+  const [destinationCount, setDestinationCount] = useState(null);
+  const [orderCount, setOrderCount] = useState(null);
 
   useEffect(() => {
-    fetch('/api/tours')
-      .then((res) => res.json())
-      .then((data) => setTourCount(Array.isArray(data) ? data.length : 0))
-      .catch(() => setTourCount(0));
+    Promise.all([
+      fetch('/api/tours').then((res) => res.json()).then((data) => (Array.isArray(data) ? data.length : 0)).catch(() => 0),
+      fetch('/api/bookings').then((res) => res.json()).then((data) => (Array.isArray(data) ? data.length : 0)).catch(() => 0),
+      fetch('/api/destinations').then((res) => res.json()).then((data) => (Array.isArray(data) ? data.length : 0)).catch(() => 0),
+      fetch('/api/orders').then((res) => res.json()).then((data) => (Array.isArray(data) ? data.length : 0)).catch(() => 0),
+    ]).then(([tours, inquiries, destinations, orders]) => {
+      setTourCount(tours);
+      setInquiryCount(inquiries);
+      setDestinationCount(destinations);
+      setOrderCount(orders);
+    });
   }, []);
 
   const stats = [
     { label: 'Tour packages', value: tourCount ?? '—', icon: IconTours },
-    { label: 'Inquiries', value: '—', icon: IconInquiries },
-    { label: 'Destinations', value: '—', icon: IconDestinations },
-    { label: 'Orders', value: '—', icon: IconOrders },
+    { label: 'Inquiries', value: inquiryCount ?? '—', icon: IconInquiries },
+    { label: 'Destinations', value: destinationCount ?? '—', icon: IconDestinations },
+    { label: 'Orders', value: orderCount ?? '—', icon: IconOrders },
   ];
 
   return (

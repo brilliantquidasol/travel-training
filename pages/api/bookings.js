@@ -8,8 +8,12 @@ export default async function handler(req, res) {
     const { data, error } = await supabase
       .from('bookings')
       .select('*, tour:tours(title)')
-      .order('id', { ascending: false });
-    if (error) return res.status(500).json({ error: error.message });
+      .order('created_at', { ascending: false, nullsFirst: false });
+    if (error) {
+      const fallback = await supabase.from('bookings').select('*, tour:tours(title)').order('id', { ascending: false });
+      if (fallback.error) return res.status(500).json({ error: fallback.error.message });
+      return res.status(200).json(fallback.data || []);
+    }
     res.status(200).json(data || []);
     return;
   }

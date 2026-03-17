@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
@@ -8,10 +9,32 @@ import { getTourImageUrl } from '../lib/placeholderImages';
 import { supabase } from '../lib/supabase';
 import { referenceAssets } from '../lib/referenceAssets';
 
+function filterToursByQuery(tours, q) {
+  if (!q || typeof q !== 'string') return tours;
+  const term = q.trim().toLowerCase();
+  if (!term) return tours;
+  return tours.filter((t) => {
+    const title = (t.title || '').toLowerCase();
+    const desc = (t.description || '').toLowerCase();
+    const category = (t.category || '').toLowerCase();
+    return title.includes(term) || desc.includes(term) || category.includes(term);
+  });
+}
+
 export default function Landing({ tours }) {
+  const router = useRouter();
+  const searchQuery = typeof router.query.q === 'string' ? router.query.q : '';
   const list = Array.isArray(tours) ? tours : [];
-  const featuredTours = list.slice(0, 4);
+  const filteredList = useMemo(() => filterToursByQuery(list, searchQuery), [list, searchQuery]);
+  const featuredTours = searchQuery ? filteredList.slice(0, 8) : list.slice(0, 4);
   const lastMinuteTours = list.slice(0, 2);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#tours') {
+      const el = document.getElementById('tours');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [searchQuery, router.asPath]);
 
   const [searchDestinations, setSearchDestinations] = useState('');
   const [searchGuests, setSearchGuests] = useState('');
@@ -71,7 +94,26 @@ export default function Landing({ tours }) {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-10 text-white tracking-tight">
             Travel Top Destination of The World
           </h1>
-          <form className="bg-white rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-3xl mx-auto relative" onSubmit={(e) => e.preventDefault()}>
+          <form
+              className="bg-white rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-3xl mx-auto relative"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const q = searchDestinations.trim();
+                if (q) {
+                  router.push(router.pathname + '?q=' + encodeURIComponent(q) + '#tours');
+                  setTimeout(() => {
+                    const el = document.getElementById('tours');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                } else {
+                  router.push(router.pathname + '#tours');
+                  setTimeout(() => {
+                    const el = document.getElementById('tours');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                }
+              }}
+            >
             <div className="flex-1 flex flex-col sm:flex-row sm:divide-x divide-gray-200 relative">
               {/* Destinations with suggestions */}
               <div className="flex-1 relative flex items-center">
@@ -148,8 +190,8 @@ export default function Landing({ tours }) {
             </div>
             <button type="submit" className="btn-primary rounded-xl shrink-0 py-3.5 px-4 text-sm">
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ minWidth: 'max-content' }}>
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 Find Now
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </span>
             </button>
           </form>
@@ -217,9 +259,11 @@ export default function Landing({ tours }) {
 
       {/* 4. Popular Tours Packages - keep tours */}
       <section id="tours" className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">Choose Your Package</p>
+        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">
+          {searchQuery ? 'Search results' : 'Choose Your Package'}
+        </p>
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-          Popular Tours Packages
+          {searchQuery ? `Tours matching "${searchQuery}"` : 'Popular Tours Packages'}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredTours.map((tour) => (
@@ -227,7 +271,9 @@ export default function Landing({ tours }) {
           ))}
         </div>
         {featuredTours.length === 0 && (
-          <p className="text-center text-gray-500 dark:text-gray-400">No featured tours yet.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            {searchQuery ? `No tours match "${searchQuery}".` : 'No featured tours yet.'}
+          </p>
         )}
       </section>
 
@@ -397,15 +443,17 @@ export default function Landing({ tours }) {
       {/* All Tours */}
       <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-          All Tours
+          {searchQuery ? `All results for "${searchQuery}"` : 'All Tours'}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {list.map((tour) => (
+          {(searchQuery ? filteredList : list).map((tour) => (
             <TourCard key={tour.id} tour={tour} />
           ))}
         </div>
-        {list.length === 0 && (
-          <p className="text-center text-gray-500 dark:text-gray-400">No tours yet. Add some in the admin.</p>
+        {(searchQuery ? filteredList : list).length === 0 && (
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            {searchQuery ? `No tours match "${searchQuery}".` : 'No tours yet. Add some in the admin.'}
+          </p>
         )}
       </section>
 
