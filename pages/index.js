@@ -1,91 +1,201 @@
+import { useState } from 'react';
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import TourCard from '../components/TourCard';
+import { getTourImageUrl } from '../lib/placeholderImages';
 import { supabase } from '../lib/supabase';
 import { referenceAssets } from '../lib/referenceAssets';
 
 export default function Landing({ tours }) {
   const list = Array.isArray(tours) ? tours : [];
-  const featuredTours = list.slice(0, 3);
+  const featuredTours = list.slice(0, 4);
+  const lastMinuteTours = list.slice(0, 2);
 
-  const coreValues = [
-    { title: 'Customer Delight', desc: 'We deliver the best service and experience for our customers.', icon: referenceAssets.coreValueIcons.customerDelight },
-    { title: 'Trusted Adventure', desc: 'Book with confidence. We handle every detail with expertise and reliability.', icon: referenceAssets.coreValueIcons.trustedAdventure },
-    { title: 'Expert Guides', desc: 'Local experts and curated itineraries for memorable journeys.', icon: referenceAssets.coreValueIcons.expertGuides },
-    { title: 'Time Flexibility', desc: 'Choose dates that work for you. We adapt to your schedule.', icon: referenceAssets.coreValueIcons.timeFlexibility },
+  const [searchDestinations, setSearchDestinations] = useState('');
+  const [searchGuests, setSearchGuests] = useState('');
+  const [subscribeEmail, setSubscribeEmail] = useState('');
+  const [showDestSuggestions, setShowDestSuggestions] = useState(false);
+  const [showGuestsDropdown, setShowGuestsDropdown] = useState(false);
+
+  const destinationSuggestions = [
+    ...referenceAssets.destinations.map((d) => d.title),
+    'Paris, France',
+    'Bali, Indonesia',
+    'Tokyo, Japan',
+    'Maldives',
+    'Swiss Alps',
+    'New York, USA',
+    'London, UK',
+    'Dubai, UAE',
+  ].filter((name) => name.toLowerCase().includes(searchDestinations.toLowerCase().trim()));
+
+  const guestOptions = ['1 Guest', '2 Guests', '3 Guests', '4 Guests', '5 Guests', '6+ Guests'];
+
+  const aboutFeatures = [
+    'All placges and activiates are carefully picked by us.',
+    '98% Course Completitation Rates',
+    'We are an award winning agency',
+    'Trusted by more than 80,000 customers',
   ];
 
-  const stats = [
+  const coreValues = [
+    { title: 'Customer Delight', desc: 'We deliver the best service and you to experience for our customer we est service and you to experie', icon: referenceAssets.coreValueIcons.customerDelight },
+    { title: 'Trusted Adventure', desc: 'We deliver the best service and you to experience for our customer we est service and you to experie', icon: referenceAssets.coreValueIcons.trustedAdventure },
+    { title: 'Expert Guides', desc: 'We deliver the best service and you to experience for our customer we est service and you to experie', icon: referenceAssets.coreValueIcons.expertGuides },
+    { title: 'Time Flexibility', desc: 'We deliver the best service and you to experience for our customer we est service and you to experie', icon: referenceAssets.coreValueIcons.timeFlexibility },
+  ];
+
+  const funfactStats = [
     { value: '500', suffix: '+', label: 'Holiday Package' },
     { value: '100', suffix: '+', label: 'Luxury Hotel' },
     { value: '77', suffix: 'k', label: 'Premium Airlines' },
     { value: '80', suffix: 'K+', label: 'Happy Customer' },
   ];
 
-  const howItWorks = [
-    { step: '01', title: 'Get Travel Insurance', desc: 'We help you stay protected with flexible travel insurance options.', image: referenceAssets.howItWorks[0] },
-    { step: '02', title: 'Compare & Book', desc: 'Browse tours, compare prices, and book in a few clicks.', image: referenceAssets.howItWorks[1] },
-    { step: '03', title: 'Book a Room', desc: 'Secure your stay. We handle accommodations as part of your package.', image: referenceAssets.howItWorks[2] },
-  ];
-
   return (
     <Layout>
       <Navbar />
 
-      {/* Hero - reference hero image */}
-      <section className="pt-24 relative min-h-[90vh] flex flex-col items-center justify-center text-center overflow-hidden">
+      {/* 1. Hero - exact reference: sub title, title, Destinations / Guests / Find Now */}
+      <section className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] min-h-[90vh] flex flex-col items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={referenceAssets.hero} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40 dark:bg-black/50" />
+          <img src={referenceAssets.hero} alt="" className="w-full h-full object-cover object-top" />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
-        <div className="relative z-10 px-4 py-24">
-          <p className="text-sm sm:text-base uppercase tracking-widest text-white/90 mb-4">
+        <div className="relative z-10 px-4 pt-24 pb-24 w-full max-w-4xl mx-auto">
+          <p className="text-sm sm:text-base uppercase tracking-[0.2em] text-white/90 mb-4">
             Let&apos;s Travel The World With Us
           </p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-10 text-white tracking-tight">
             Travel Top Destination of The World
           </h1>
-          <p className="text-lg sm:text-xl mb-10 text-white/90 max-w-2xl mx-auto">
-            Discover curated tours, adventures, and experiences for every traveler.
-          </p>
-          <Link href="#tours" className="glass-btn px-8 py-3 text-lg font-semibold inline-block transition">
-            Find Tours
-          </Link>
+          <form className="bg-white rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-4xl mx-auto relative" onSubmit={(e) => e.preventDefault()}>
+            <div className="flex-1 flex flex-col sm:flex-row sm:divide-x divide-gray-200 relative">
+              {/* Destinations with suggestions */}
+              <div className="flex-1 relative flex items-center">
+                <span className="absolute left-3 text-gray-400 pointer-events-none" aria-hidden>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Destinations"
+                  value={searchDestinations}
+                  onChange={(e) => {
+                    setSearchDestinations(e.target.value);
+                    setShowDestSuggestions(true);
+                  }}
+                  onFocus={() => setShowDestSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowDestSuggestions(false), 200)}
+                  className="w-full pl-10 pr-4 py-3.5 rounded-l-xl sm:rounded-none border-0 bg-transparent text-gray-800 placeholder-gray-500 focus:ring-0 min-w-0 focus:outline-none"
+                  autoComplete="off"
+                />
+                {showDestSuggestions && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 max-h-56 overflow-y-auto z-50">
+                    {destinationSuggestions.length > 0 ? (
+                      destinationSuggestions.slice(0, 8).map((name) => (
+                        <button
+                          key={name}
+                          type="button"
+                          className="w-full text-left px-4 py-3 text-gray-800 hover:bg-gray-100 transition-colors text-sm"
+                          onMouseDown={() => {
+                            setSearchDestinations(name);
+                            setShowDestSuggestions(false);
+                          }}
+                        >
+                          {name}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-gray-500 text-sm">No destinations match</div>
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* Guests with dropdown */}
+              <div className="flex-1 relative flex items-center">
+                <span className="absolute left-3 text-gray-400 pointer-events-none" aria-hidden>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Guests"
+                  value={searchGuests}
+                  readOnly
+                  onFocus={() => setShowGuestsDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowGuestsDropdown(false), 200)}
+                  className="w-full pl-10 pr-4 py-3.5 border-0 bg-transparent text-gray-800 placeholder-gray-500 focus:ring-0 min-w-0 focus:outline-none cursor-pointer"
+                />
+                {showGuestsDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    {guestOptions.map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        className={`w-full text-left px-4 py-3 text-sm transition-colors ${searchGuests === opt ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-800 hover:bg-gray-100'}`}
+                        onMouseDown={() => {
+                          setSearchGuests(opt);
+                          setShowGuestsDropdown(false);
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <button type="submit" className="btn-primary px-6 py-3.5 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              Find Now
+            </button>
+          </form>
         </div>
       </section>
 
-      {/* About - reference: "We are Professional Planners For your" */}
-      <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-sm uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">About Us</p>
-        <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
-          We are Professional Planners For your
-        </h2>
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* 2. About Us - exact reference copy */}
+      <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 gap-14 items-center">
+          <div className="relative flex justify-center min-h-[320px]">
+            <div className="relative w-64 h-64 md:w-72 md:h-72">
+              <div className="absolute inset-0 rounded-full overflow-hidden border-4 border-white shadow-xl">
+                <img src={referenceAssets.about} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl">
+                <img src={referenceAssets.destinations[0]?.image || referenceAssets.about} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+            </div>
+          </div>
           <div>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
+            <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 font-medium">About Us</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+              We are Professional Planners For your
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               We are professional planners dedicated to creating seamless and memorable travel experiences. From carefully designed tour packages to personalized journeys, we handle every detail with expertise and reliability.
             </p>
-            <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
+            <p className="text-gray-700 dark:text-gray-300 font-medium mb-6">
               Speak to our Destination Experts at Direct Call +1 546 378 654
             </p>
-            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-              {['All places and activities are carefully picked by us.', '98% course completion rates.', 'We are an award winning agency.', 'Trusted by more than 80,000 customers.'].map((item, i) => (
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400 mb-6">
+              {aboutFeatures.map((item, i) => (
                 <li key={i} className="flex items-center gap-2">
-                  <span className="text-green-500">✓</span> {item}
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg></span>
+                  {item}
                 </li>
               ))}
             </ul>
-            <Link href="/about" className="glass-btn mt-6 inline-block">Read More</Link>
-          </div>
-          <div className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700">
-            <img src={referenceAssets.about} alt="Travel planning" className="w-full h-full object-cover" />
+            <Link href="/about" className="btn-primary">Read More</Link>
           </div>
         </div>
       </section>
 
-      {/* Core Values - reference background + icons */}
-      <section className="py-16 md:py-24 relative">
+      {/* 3. Core Value - full width bg image, 4 cards */}
+      <section className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] section overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src={referenceAssets.coreValueBg} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/50" />
@@ -93,41 +203,38 @@ export default function Landing({ tours }) {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {coreValues.map((item, i) => (
-              <div key={i} className="glass p-6 rounded-xl text-center">
+              <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
                 <img src={item.icon} alt="" className="w-14 h-14 mx-auto mb-4 object-contain" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">{item.desc}</p>
+                <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                <p className="text-white/90 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Popular Tours - reference: "CHOOSE YOUR PACKAGE" / "Popular Tours Packages" */}
-      <section id="tours" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-sm uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2 text-center">Choose Your Package</p>
+      {/* 4. Popular Tours Packages - keep tours */}
+      <section id="tours" className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">Choose Your Package</p>
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
           Popular Tours Packages
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredTours.map((tour) => (
             <TourCard key={tour.id} tour={tour} />
           ))}
         </div>
         {featuredTours.length === 0 && (
-          <p className="text-center text-gray-600 dark:text-gray-400">No featured tours yet.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">No featured tours yet.</p>
         )}
       </section>
 
-      {/* Travel Point / FunFact - reference image + stats */}
-      <section className="py-16 md:py-24 bg-gray-100 dark:bg-gray-800/50 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img src={referenceAssets.funfactBg} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* 5. Travel Point - Discover The World With Our Guide */}
+      <section className="section bg-gray-50 dark:bg-gray-800/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-14 items-center">
             <div className="text-center md:text-left">
-              <p className="text-sm uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Travel Point</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 font-medium">Travel Point</p>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
                 Discover The World With Our Guide
               </h2>
@@ -135,8 +242,8 @@ export default function Landing({ tours }) {
                 Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.
               </p>
               <div className="grid grid-cols-2 gap-4">
-                {stats.map((s, i) => (
-                  <div key={i} className="glass p-4 rounded-xl">
+                {funfactStats.map((s, i) => (
+                  <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.value}{s.suffix}</p>
                     <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{s.label}</p>
                   </div>
@@ -144,25 +251,25 @@ export default function Landing({ tours }) {
               </div>
             </div>
             <div className="flex justify-center">
-              <img src={referenceAssets.funfactImage} alt="Travel" className="max-h-80 w-auto object-contain rounded-xl" />
+              <img src={referenceAssets.funfactImage} alt="Travel" className="max-h-[380px] w-auto object-contain rounded-xl" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Popular Destinations - reference images (same as TravelPro site) */}
-      <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-sm uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2 text-center">Popular Destination</p>
+      {/* 6. Popular Destinations */}
+      <section id="destinations" className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">Popular Destination</p>
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
           Popular Destinations
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {referenceAssets.destinations.map((dest, i) => (
             <Link key={i} href="#tours" className="group block">
-              <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition">
-                <img src={dest.image} alt={dest.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
+                <img src={dest.image} alt={dest.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                  <h3 className="text-white font-bold">{dest.title}</h3>
+                  <h3 className="text-white font-bold text-lg">{dest.title}</h3>
                   <p className="text-white/90 text-sm">{dest.subtitle}</p>
                 </div>
               </div>
@@ -171,16 +278,18 @@ export default function Landing({ tours }) {
         </div>
       </section>
 
-      {/* Testimonial Banner - reference background image */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-2xl overflow-hidden min-h-[320px] flex flex-col items-center justify-center text-center p-10 md:p-16">
-            <img src={referenceAssets.testimonialBanner} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-[#102039]/90" />
-            <div className="relative z-10 text-white">
-              <h3 className="text-2xl sm:text-3xl font-bold mb-4">A Truly Wonderful Experience</h3>
-              <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-                Brilliant for anyone looking to get away from the hustle and bustle of city life or detox from their tech for a few days. I could have stayed another week! They really have thought about everything here down to the finest details.
+      {/* 7. Banner - A Truly Wonderful Experience, overlay #102039 */}
+      <section className="section">
+        <div className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] overflow-hidden">
+          <img src={referenceAssets.testimonialBanner} alt="" className="w-full min-h-[380px] object-cover" />
+          <div className="absolute inset-0 bg-[#102039]/90" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 max-w-2xl">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                A Truly Wonderful Experience
+              </h2>
+              <p className="text-white/90 mb-4 whitespace-pre-line">
+                Brilliant for anyone looking to get away from the hustle and bustle of city life or detox from their tech for a few days. I could have stayed another week!{'\n\n'}They really have thought about everything here down to the finest details.
               </p>
               <p className="text-white/70 text-sm">15 Oct 2025</p>
             </div>
@@ -188,43 +297,103 @@ export default function Landing({ tours }) {
         </div>
       </section>
 
-      {/* How it Works - reference: "Getting Started? It's Simple" */}
-      <section className="py-16 md:py-24 bg-gray-100 dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2 text-center">How It Works</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            Getting Started? It&apos;s Simple
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {howItWorks.map((item, i) => (
-              <div key={i} className="glass p-8 rounded-xl text-center">
-                <img src={item.image} alt={item.title} className="w-20 h-20 mx-auto mb-4 object-contain" />
-                <span className="text-2xl font-bold text-blue-500 dark:text-blue-400 mb-2 block">{item.step}</span>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">{item.desc}</p>
+      {/* 8. How It Works - Getting Started? It's Simple */}
+      <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">How It Works</p>
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+          Getting Started? It&apos;s Simple
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {referenceAssets.howItWorks.map((item, i) => (
+            <div key={i} className="text-center">
+              <div className="relative inline-block mb-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-500 mx-auto shadow-lg">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                </div>
+                <span className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg></span>
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">{item.subtitle}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 9. Our Journey in Videos */}
+      <section className="relative left-1/2 -translate-x-1/2 w-screen max-w-[100vw] overflow-hidden">
+        <img src={referenceAssets.videoBg} alt="" className="w-full min-h-[420px] object-cover" />
+        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+          <p className="text-white/90 text-sm uppercase tracking-[0.2em] mb-2">Our Journey in Videos</p>
+          <button type="button" className="w-20 h-20 rounded-full bg-primary-500 hover:bg-primary-600 flex items-center justify-center text-white shadow-xl transition-all duration-200 hover:scale-105 active:scale-95" aria-label="Play video">
+            <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /></svg>
+          </button>
+          <p className="text-white/80 text-sm mt-4">Location Mountain Strait, Any State</p>
+        </div>
+      </section>
+
+      {/* 10. Partners - logo images */}
+      <section className="section max-w-6xl mx-auto px-4 flex flex-wrap justify-center items-center gap-10 md:gap-16">
+        {referenceAssets.partners.map((logo, i) => (
+          <img key={i} src={logo} alt="" className="h-8 md:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
+        ))}
+      </section>
+
+      {/* 11. Last Minute Amazing Deals - News & Blogs */}
+      <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p className="text-xs uppercase tracking-[0.25em] text-primary-500 mb-2 text-center font-medium">News & Blogs</p>
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+          Last Minute Amazing Deals
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {lastMinuteTours.length > 0 ? lastMinuteTours.map((tour) => (
+            <Link key={tour.id} href={`/tours/${tour.id}`} className="group block glass-card rounded-2xl overflow-hidden">
+              <div className="relative h-56">
+                <img src={getTourImageUrl(tour)} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
+                  <h3 className="text-xl font-bold text-white">{tour.title}</h3>
+                  <div className="flex gap-4 text-white/90 text-sm mt-1">
+                    {tour.price != null && <span>${Number(tour.price).toLocaleString()}</span>}
+                    {tour.duration && <span>{tour.duration}</span>}
+                  </div>
+                  <span className="inline-block mt-4 btn-primary text-sm py-2 px-4 w-fit">
+                    Book Now
+                  </span>
+                </div>
+              </div>
+            </Link>
+          )) : (
+            <div className="md:col-span-2 text-center py-12 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-500 dark:text-gray-400">
+              No deals at the moment. Check back soon!
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Subscribe Now */}
+      <section className="section bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-80" aria-hidden />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-5 text-white text-center md:text-left">
+              <span className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white/20 border border-white/30 shadow-lg">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              </span>
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold tracking-tight">Subscribe Now</h3>
+                <p className="text-white/90 text-sm mt-1">Get the best deals and travel inspiration in your inbox.</p>
+              </div>
+            </div>
+            <form className="flex flex-col sm:flex-row gap-3 w-full md:w-auto md:min-w-[380px]" onSubmit={(e) => e.preventDefault()}>
+              <input type="email" placeholder="Enter your email" value={subscribeEmail} onChange={(e) => setSubscribeEmail(e.target.value)} className="flex-1 px-4 py-3.5 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-white/50 focus:outline-none min-w-0 border-0 shadow-inner" />
+              <button type="submit" className="btn-secondary whitespace-nowrap py-3.5 px-6">Subscribe</button>
+            </form>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 text-center">
-        <div className="glass max-w-3xl mx-auto p-10 rounded-2xl shadow-xl">
-          <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-            Ready for Your Next Adventure?
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            Sign up today and explore tours crafted for every type of traveler.
-          </p>
-          <Link href="/signup" className="glass-btn px-8 py-3 text-lg font-semibold transition">
-            Get Started
-          </Link>
-        </div>
-      </section>
-
       {/* All Tours */}
-      <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
           All Tours
         </h2>
@@ -234,17 +403,17 @@ export default function Landing({ tours }) {
           ))}
         </div>
         {list.length === 0 && (
-          <p className="text-center text-gray-600 dark:text-gray-400">No tours yet. Add some in the admin.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">No tours yet. Add some in the admin.</p>
         )}
       </section>
+
+      <Footer />
     </Layout>
   );
 }
 
 export async function getStaticProps() {
-  if (!supabase) {
-    return { props: { tours: [] } };
-  }
+  if (!supabase) return { props: { tours: [] } };
   const { data: tours, error } = await supabase.from('tours').select('*');
   if (error) return { props: { tours: [] } };
   return { props: { tours: tours || [] } };

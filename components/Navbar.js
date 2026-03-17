@@ -3,62 +3,90 @@ import Link from 'next/link';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
-  const navLinkClass = 'text-gray-900 dark:text-white hover:text-blue-500 transition';
-  const mobileLinkClass = 'block text-gray-900 dark:text-white hover:bg-white/20 rounded px-3 py-2 transition';
+  const navLinkClass = 'text-white hover:text-white/80 transition text-sm font-medium';
+  const mobileLinkClass = 'block text-white hover:bg-white/10 rounded px-3 py-2 transition';
 
   return (
-    <nav className="glass fixed w-full z-50 backdrop-blur-md shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0 text-2xl font-bold text-gray-900 dark:text-white">
-            TravelPro
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[#1F2D3D] shadow-lg">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 gap-8 lg:gap-12">
+          {/* Logo - teal icon + TravelPro */}
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-400 text-[#1F2D3D]">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M4 8 Q8 6 12 8 T20 8" />
+                <path d="M4 12 Q8 10 12 12 T20 12" />
+                <path d="M4 16 Q8 14 12 16 T20 16" />
+              </svg>
+            </span>
+            <span className="text-xl font-bold text-white">TravelPro</span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8 items-center">
-            <Link href="#tours" className={navLinkClass}>
-              Tours
+          {/* Center - Nav links (desktop) */}
+          <div className="hidden lg:flex items-center gap-8">
+            <Link href="/" className={navLinkClass}>Home</Link>
+            <Link href="/about" className={navLinkClass}>About Us</Link>
+            <Link href="#destinations" className={navLinkClass}>Destinations</Link>
+            <Link href="#tours" className={navLinkClass}>Tours</Link>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMoreOpen(!moreOpen)}
+                className={`flex items-center gap-1 ${navLinkClass}`}
+              >
+                More
+                <svg className="w-4 h-4 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {moreOpen && (
+                <div className="absolute top-full right-0 mt-1 py-2 w-40 bg-[#1F2D3D] border border-white/10 rounded shadow-lg z-50">
+                  <Link href="/signup" className="block px-4 py-2 text-white hover:bg-white/10 text-sm" onClick={() => setMoreOpen(false)}>Sign Up</Link>
+                  <Link href="/admin/dashboard" className="block px-4 py-2 text-white hover:bg-white/10 text-sm" onClick={() => setMoreOpen(false)}>Admin</Link>
+                </div>
+              )}
+            </div>
+            <Link href="/contact" className={navLinkClass}>Contacts</Link>
+          </div>
+
+          {/* Right - Icons + phone */}
+          <div className="hidden lg:flex items-center gap-6">
+            <button type="button" className="text-white hover:text-white/80 transition p-1" aria-label="Search">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            <Link href="/signup" className="text-white hover:text-white/80 transition p-1" aria-label="Account">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </Link>
-            <Link href="/about" className={navLinkClass}>
-              About
-            </Link>
-            <Link href="/contact" className={navLinkClass}>
-              Contact
-            </Link>
-            <Link href="/signup" className="glass-btn px-4 py-2">
-              Sign Up
-            </Link>
-            <Link href="/admin/dashboard" className={navLinkClass + ' text-sm'}>
-              Admin
-            </Link>
+            <button type="button" className="text-white hover:text-white/80 transition p-1" aria-label="Language">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0h.5a2.5 2.5 0 002.5-2.5V3.935M12 12a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v1a2 2 0 002 2h2z" />
+              </svg>
+            </button>
+            <a href="tel:+8123985789" className="text-white hover:text-white/80 transition text-sm font-medium whitespace-nowrap">
+              +8 (123) 985 789
+            </a>
           </div>
 
           {/* Mobile Hamburger */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-900 dark:text-white focus:outline-none p-2"
+              className="text-white focus:outline-none p-2"
               aria-expanded={isOpen}
               aria-label="Toggle menu"
             >
               <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -68,22 +96,15 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden px-2 pt-2 pb-3 space-y-1 border-t border-white/20">
-          <Link href="#tours" className={mobileLinkClass} onClick={() => setIsOpen(false)}>
-            Tours
-          </Link>
-          <Link href="/about" className={mobileLinkClass} onClick={() => setIsOpen(false)}>
-            About
-          </Link>
-          <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>
-            Contact
-          </Link>
-          <Link href="/signup" className="glass-btn block text-center w-full py-2 mt-2" onClick={() => setIsOpen(false)}>
-            Sign Up
-          </Link>
-          <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>
-            Admin
-          </Link>
+        <div className="lg:hidden bg-[#1F2D3D] border-t border-white/10 px-4 py-4 space-y-2">
+          <Link href="/" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Home</Link>
+          <Link href="/about" className={mobileLinkClass} onClick={() => setIsOpen(false)}>About Us</Link>
+          <Link href="#destinations" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Destinations</Link>
+          <Link href="#tours" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Tours</Link>
+          <Link href="/contact" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Contacts</Link>
+          <Link href="/signup" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Sign Up</Link>
+          <Link href="/admin/dashboard" className={mobileLinkClass} onClick={() => setIsOpen(false)}>Admin</Link>
+          <a href="tel:+8123985789" className="block text-white/90 py-2">+8 (123) 985 789</a>
         </div>
       )}
     </nav>
