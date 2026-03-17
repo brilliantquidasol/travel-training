@@ -1,0 +1,95 @@
+{
+  "tours": [
+    {
+      "title": "Everest Base Camp Trek",
+      "description": "Trek through Sherpa villages and high-altitude trails to the base of the world's highest peak. Acclimatization days and experienced guides make this Himalayan adventure safe and unforgettable.",
+      "price": 1899,
+      "category": "trekking",
+      "image": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Serengeti & Ngorongoro Safari",
+      "description": "Experience the Great Migration and the Big Five in Tanzania. Game drives in the Serengeti and a descent into the Ngorongoro Crater with comfortable lodges and expert guides.",
+      "price": 2499,
+      "category": "safari",
+      "image": "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Maldives Overwater Bungalow Escape",
+      "description": "Stay in a private overwater villa with direct lagoon access. Includes candlelit dinners, spa treatments, and snorkeling in crystal-clear waters. Ideal for a romantic getaway.",
+      "price": 3299,
+      "category": "honeymoon",
+      "image": "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "European Highlights: Paris, Rome & Barcelona",
+      "description": "A 10-day group tour of three iconic cities with skip-the-line tickets and guided walks. Small group size with optional evening experiences and central hotels.",
+      "price": 1599,
+      "category": "group tour",
+      "image": "https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Patagonia Glaciers & Torres del Paine",
+      "description": "Hike among granite peaks and electric-blue glaciers. This adventure combines trekking, boat trips to glaciers, and stays in remote refugios for those who love the outdoors.",
+      "price": 2199,
+      "category": "adventure",
+      "image": "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Inca Trail to Machu Picchu",
+      "description": "Follow the ancient Inca path through cloud forest and high passes to the Sun Gate. Four days of trekking end with a sunrise view of Machu Picchu. Permits and camping included.",
+      "price": 1299,
+      "category": "trekking",
+      "image": "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Okavango Delta Safari",
+      "description": "Explore Botswana's Okavango Delta by mokoro and game drive. Mobile camps and close encounters with elephants, lions, and rare wildlife in one of Africa's last great wildernesses.",
+      "price": 2899,
+      "category": "safari",
+      "image": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Santorini & Crete Romantic Getaway",
+      "description": "White-washed villages, sunset views, and private wine tastings. Split your stay between Santorini and Crete with ferry transfers and hand-picked boutique hotels.",
+      "price": 1999,
+      "category": "honeymoon",
+      "image": "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Japan Cultural Journey: Tokyo to Kyoto",
+      "description": "Temples, tea ceremonies, and bullet trains. This group tour covers Tokyo, Hakone, and Kyoto with local guides and traditional stays. Perfect for first-time visitors.",
+      "price": 2299,
+      "category": "group tour",
+      "image": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop"
+    },
+    {
+      "title": "Iceland Ring Road Adventure",
+      "description": "Drive the full Ring Road with glacier hikes, hot springs, and northern lights. Self-drive with a detailed itinerary and pre-booked accommodations. Adventure at your own pace.",
+      "price": 1799,
+      "category": "adventure",
+      "image": "https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=400&h=300&fit=crop"
+    }
+  ],
+  "bookings": [
+    { "tour_title": "Everest Base Camp Trek", "name": "James Chen", "email": "james.chen@email.com", "date": "2026-04-12" },
+    { "tour_title": "Serengeti & Ngorongoro Safari", "name": "Maria Santos", "email": "maria.santos@email.com", "date": "2026-07-20" },
+    { "tour_title": "Maldives Overwater Bungalow Escape", "name": "David Wilson", "email": "david.wilson@email.com", "date": "2026-06-01" },
+    { "tour_title": "European Highlights: Paris, Rome & Barcelona", "name": "Sophie Müller", "email": "sophie.mueller@email.com", "date": "2026-05-15" },
+    { "tour_title": "Patagonia Glaciers & Torres del Paine", "name": "Alex Rivera", "email": "alex.rivera@email.com", "date": "2026-11-08" },
+    { "tour_title": "Inca Trail to Machu Picchu", "name": "Yuki Tanaka", "email": "yuki.tanaka@email.com", "date": "2026-08-22" },
+    { "tour_title": "Okavango Delta Safari", "name": "Oliver Brown", "email": "oliver.brown@email.com", "date": "2026-09-10" },
+    { "tour_title": "Santorini & Crete Romantic Getaway", "name": "Lisa Johnson", "email": "lisa.johnson@email.com", "date": "2026-06-28" },
+    { "tour_title": "Japan Cultural Journey: Tokyo to Kyoto", "name": "Priya Sharma", "email": "priya.sharma@email.com", "date": "2026-10-01" },
+    { "tour_title": "Iceland Ring Road Adventure", "name": "Thomas Andersen", "email": "thomas.andersen@email.com", "date": "2026-03-15" },
+    { "tour_title": "Everest Base Camp Trek", "name": "Rachel Green", "email": "rachel.green@email.com", "date": "2026-05-05" },
+    { "tour_title": "European Highlights: Paris, Rome & Barcelona", "name": "Michael Park", "email": "michael.park@email.com", "date": "2026-08-14" },
+    { "tour_title": "Inca Trail to Machu Picchu", "name": "Anna Kowalski", "email": "anna.kowalski@email.com", "date": "2026-07-30" },
+    { "tour_title": "Maldives Overwater Bungalow Escape", "name": "Chris Lee", "email": "chris.lee@email.com", "date": "2026-09-20" },
+    { "tour_title": "Japan Cultural Journey: Tokyo to Kyoto", "name": "Fatima Al-Hassan", "email": "fatima.alhassan@email.com", "date": "2026-11-25" }
+  ],
+  "admin_users": [
+    { "email": "admin@travelapp.com", "password": "Admin123!", "note": "Create in Supabase: Authentication → Users → Add user" },
+    { "email": "editor@travelapp.com", "password": "Editor123!", "note": "Create in Supabase: Authentication → Users → Add user" }
+  ]
+}

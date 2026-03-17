@@ -1,39 +1,32 @@
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Layout from '../components/Layout';
 import TourList from '../components/TourList';
+import { supabase } from '../lib/supabase';
 
-export default function HomePage() {
-  const [tours, setTours] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/tours')
-      .then((res) => res.json())
-      .then((data) => {
-        setTours(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
+export default function Home({ tours }) {
+  const list = Array.isArray(tours) ? tours : [];
   return (
-    <div className="min-h-screen p-6 md:p-10">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Travel Tours</h1>
-        <Link
-          href="/admin/dashboard"
-          className="text-blue-600 hover:text-blue-800 font-medium"
-        >
+    <Layout>
+      <header className="flex justify-between items-center mb-8 p-4">
+        <h1 className="text-4xl font-bold text-center flex-1 text-gray-900 dark:text-white">Explore Our Tours</h1>
+        <Link href="/admin/dashboard" className="text-blue-600 hover:text-blue-800 font-medium">
           Admin
         </Link>
       </header>
-      {loading ? (
-        <p className="text-gray-500">Loading tours...</p>
-      ) : tours.length === 0 ? (
-        <p className="text-gray-500">No tours yet. Add some in the admin.</p>
+      {list.length === 0 ? (
+        <p className="text-gray-600 dark:text-gray-300 text-center p-4">No tours yet. Add some in the admin.</p>
       ) : (
-        <TourList tours={tours} />
+        <TourList tours={list} />
       )}
-    </div>
+    </Layout>
   );
+}
+
+export async function getStaticProps() {
+  if (!supabase) {
+    return { props: { tours: [] } };
+  }
+  const { data: tours, error } = await supabase.from('tours').select('*');
+  if (error) return { props: { tours: [] } };
+  return { props: { tours: tours || [] } };
 }

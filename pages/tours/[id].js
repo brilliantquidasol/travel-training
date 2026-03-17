@@ -1,38 +1,47 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { supabase } from '../../lib/supabase';
+import Layout from '../../components/Layout';
 import TourDetails from '../../components/TourDetails';
 
-export default function TourPage() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [tour, setTour] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) return;
-    fetch(`/api/tours?id=${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const t = Array.isArray(data) ? data[0] : data;
-        setTour(t || null);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [id]);
+export default function TourDetailsPage({ tour }) {
+  if (!tour) {
+    return (
+      <Layout>
+        <p className="text-gray-700 dark:text-gray-200 p-6">Tour not found.</p>
+        <Link href="/" className="text-blue-600 hover:text-blue-800 ml-6">← Back to tours</Link>
+      </Layout>
+    );
+  }
 
   return (
-    <div className="min-h-screen p-6 md:p-10">
-      <Link href="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+    <Layout>
+      <Link href="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block p-4">
         ← Back to tours
       </Link>
-      {loading ? (
-        <p className="text-gray-500">Loading...</p>
-      ) : tour ? (
+      <div className="max-w-4xl mx-auto">
         <TourDetails tour={tour} />
-      ) : (
-        <p className="text-gray-500">Tour not found.</p>
-      )}
-    </div>
+      </div>
+    </Layout>
   );
+}
+
+export async function getStaticPaths() {
+  if (!supabase) {
+    return { paths: [], fallback: true };
+  }
+  const { data: tours, error } = await supabase.from('tours').select('id');
+  if (error || !tours?.length) {
+    return { paths: [], fallback: true };
+  }
+  const paths = tours.map((t) => ({ params: { id: t.id } }));
+  return { paths, fallback: true };
+}
+
+export async function getStaticProps({ params }) {
+  if (!params?.id || !supabase) {
+    return { props: { tour: null } };
+  }
+  const { data: tour, error } = await supabase.from('tours').select('*').eq('id', params.id).single();
+  if (error) return { props: { tour: null } };
+  return { props: { tour: tour || null } };
 }

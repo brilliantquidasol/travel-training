@@ -10,14 +10,26 @@ Next.js travel tour app with Supabase (tours + bookings). Deploy to Vercel.
 2. In the SQL editor, create tables:
 
 ```sql
--- tours
+-- tours (with itineraries, highlights, gallery, duration)
 create table tours (
   id uuid default gen_random_uuid() primary key,
   title text not null,
   description text,
   price numeric,
-  image text
+  image text,
+  duration text,
+  highlights jsonb default '[]',
+  gallery jsonb default '[]',
+  itinerary jsonb default '[]',
+  booking_note text
 );
+
+-- If you already have tours, add new columns:
+-- alter table tours add column if not exists duration text;
+-- alter table tours add column if not exists highlights jsonb default '[]';
+-- alter table tours add column if not exists gallery jsonb default '[]';
+-- alter table tours add column if not exists itinerary jsonb default '[]';
+-- alter table tours add column if not exists booking_note text;
 
 -- bookings
 create table bookings (

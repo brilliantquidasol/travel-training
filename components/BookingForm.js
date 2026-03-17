@@ -13,36 +13,36 @@ export default function BookingForm({ tourId }) {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase.from('bookings').insert([
-      { tour_id: tourId, name, email },
-    ]);
+    const { error } = await supabase.from('bookings').insert([{ tour_id: tourId, name, email }]);
     setLoading(false);
     if (error) alert(error.message);
     else alert('Booking submitted!');
+    setName('');
+    setEmail('');
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-md">
+    <form onSubmit={handleSubmit} className="glass p-6 max-w-md mx-auto flex flex-col gap-4">
       <input
+        className="glass-input w-full"
         type="text"
         placeholder="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border p-2 rounded"
         required
       />
       <input
+        className="glass-input w-full"
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded"
         required
       />
       <button
+        className="glass-btn w-full"
         type="submit"
         disabled={loading || !supabase}
-        className="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700 disabled:opacity-50 transition"
       >
         {loading ? 'Submitting...' : 'Book Now'}
       </button>
