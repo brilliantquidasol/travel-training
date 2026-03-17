@@ -10,7 +10,7 @@ export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [guests, setGuests] = useState('');
+  const [guests, setGuests] = useState('2');
   const [preferredDate, setPreferredDate] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
     setName('');
     setEmail('');
     setPhone('');
-    setGuests('');
+    setGuests('2');
     setPreferredDate('');
     setSpecialRequests('');
   };
@@ -91,16 +91,18 @@ export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="booking-guests" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of guests</label>
-          <input
+          <select
             id="booking-guests"
             className={inputClass}
-            type="number"
-            min="1"
-            max="99"
-            placeholder="e.g. 2"
             value={guests}
             onChange={(e) => setGuests(e.target.value)}
-          />
+          >
+            <option value="">Select guests</option>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+              <option key={n} value={n}>{n} {n === 1 ? 'Guest' : 'Guests'}</option>
+            ))}
+            <option value="12">12+ Guests</option>
+          </select>
         </div>
         <div>
           <label htmlFor="booking-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred date</label>

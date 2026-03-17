@@ -21,11 +21,41 @@ function filterToursByQuery(tours, q) {
   });
 }
 
+const DESTINATION_NAMES = [
+  ...referenceAssets.destinations.map((d) => d.title),
+  'Paris, France',
+  'Bali, Indonesia',
+  'Tokyo, Japan',
+  'Maldives',
+  'Swiss Alps',
+  'New York, USA',
+  'London, UK',
+  'Dubai, UAE',
+  'Paris',
+  'Bali',
+  'Tokyo',
+  'Prydelands',
+];
+
+function searchMatchesDestination(term) {
+  if (!term) return false;
+  return DESTINATION_NAMES.some(
+    (name) => name && (name.toLowerCase().includes(term) || term.includes(name.toLowerCase()))
+  );
+}
+
 export default function Landing({ tours }) {
   const router = useRouter();
   const searchQuery = typeof router.query.q === 'string' ? router.query.q : '';
   const list = Array.isArray(tours) ? tours : [];
-  const filteredList = useMemo(() => filterToursByQuery(list, searchQuery), [list, searchQuery]);
+  const filteredList = useMemo(() => {
+    const tourMatches = filterToursByQuery(list, searchQuery);
+    if (tourMatches.length > 0) return tourMatches;
+    const term = (searchQuery || '').trim().toLowerCase();
+    if (!term) return list;
+    if (searchMatchesDestination(term)) return list;
+    return tourMatches;
+  }, [list, searchQuery]);
   const featuredTours = searchQuery ? filteredList.slice(0, 8) : list.slice(0, 4);
   const lastMinuteTours = list.slice(0, 2);
 
@@ -166,6 +196,7 @@ export default function Landing({ tours }) {
                   value={searchGuests}
                   readOnly
                   onFocus={() => setShowGuestsDropdown(true)}
+                  onClick={() => setShowGuestsDropdown(true)}
                   onBlur={() => setTimeout(() => setShowGuestsDropdown(false), 200)}
                   className="w-full pl-10 pr-4 py-3.5 border-0 bg-transparent text-gray-800 placeholder-gray-500 focus:ring-0 min-w-0 focus:outline-none cursor-pointer"
                 />
@@ -176,7 +207,8 @@ export default function Landing({ tours }) {
                         key={opt}
                         type="button"
                         className={`w-full text-left px-4 py-3 text-sm transition-colors ${searchGuests === opt ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-800 hover:bg-gray-100'}`}
-                        onMouseDown={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault();
                           setSearchGuests(opt);
                           setShowGuestsDropdown(false);
                         }}
