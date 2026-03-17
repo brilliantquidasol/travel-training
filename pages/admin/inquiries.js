@@ -8,18 +8,127 @@ function formatDate(val) {
   return Number.isNaN(d.getTime()) ? val : d.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
-function InquiryRow({ inquiry }) {
+const statusColors = {
+  pending: 'bg-amber-100 text-amber-800 border-amber-200',
+  confirmed: 'bg-teal-100 text-teal-800 border-teal-200',
+  cancelled: 'bg-slate-100 text-slate-600 border-slate-200',
+};
+
+function ViewInquiryModal({ inquiry, onClose, onConfirm }) {
+  if (!inquiry) return null;
+  const tourTitle = inquiry.tour?.title || 'General inquiry';
+  const status = (inquiry.status || 'pending').toLowerCase();
+  const [confirming, setConfirming] = useState(false);
+
+  const handleConfirm = async () => {
+    setConfirming(true);
+    try {
+      await onConfirm(inquiry.id);
+      onClose();
+    } catch (e) {
+      alert(e.message || 'Failed to confirm');
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="inquiry-modal-title">
+      <div
+        className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 id="inquiry-modal-title" className="text-lg font-semibold text-slate-900">Booking inquiry</h2>
+          <button type="button" onClick={onClose} className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100" aria-label="Close">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div className="px-5 py-4 overflow-y-auto space-y-4 text-sm">
+          <div>
+            <p className="text-slate-500 font-medium mb-0.5">Name</p>
+            <p className="text-slate-900">{inquiry.name}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium mb-0.5">Email</p>
+            <a href={`mailto:${inquiry.email}`} className="text-teal-600 hover:underline">{inquiry.email}</a>
+          </div>
+          {inquiry.phone && (
+            <div>
+              <p className="text-slate-500 font-medium mb-0.5">Phone</p>
+              <a href={`tel:${inquiry.phone}`} className="text-teal-600 hover:underline">{inquiry.phone}</a>
+            </div>
+          )}
+          <div>
+            <p className="text-slate-500 font-medium mb-0.5">Tour</p>
+            <p className="text-slate-900">{tourTitle}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium mb-0.5">Preferred date</p>
+            <p className="text-slate-900">{formatDate(inquiry.date)}</p>
+          </div>
+          {inquiry.guests != null && inquiry.guests > 0 && (
+            <div>
+              <p className="text-slate-500 font-medium mb-0.5">Guests</p>
+              <p className="text-slate-900">{inquiry.guests}</p>
+            </div>
+          )}
+          {inquiry.special_requests && (
+            <div>
+              <p className="text-slate-500 font-medium mb-0.5">Special requests</p>
+              <p className="text-slate-700 whitespace-pre-wrap">{inquiry.special_requests}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-slate-500 font-medium mb-0.5">Status</p>
+            <span className={`inline-flex rounded-lg border px-2.5 py-1 text-xs font-medium ${statusColors[status] || statusColors.pending}`}>
+              {status}
+            </span>
+          </div>
+        </div>
+        <div className="px-5 py-4 border-t border-slate-200 flex flex-wrap gap-2">
+          {status === 'pending' && (
+            <button
+              type="button"
+              onClick={handleConfirm}
+              disabled={confirming}
+              className="rounded-lg bg-teal-600 text-white px-4 py-2 text-sm font-medium hover:bg-teal-700 disabled:opacity-50"
+            >
+              {confirming ? 'Confirming...' : 'Confirm booking'}
+            </button>
+          )}
+          <button type="button" onClick={onClose} className="rounded-lg border border-slate-300 text-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InquiryRow({ inquiry, onView, onConfirm }) {
   const tourTitle = inquiry.tour?.title || 'General inquiry';
   const [expanded, setExpanded] = useState(false);
   const hasExtra = inquiry.phone || inquiry.guests || inquiry.special_requests;
+  const status = (inquiry.status || 'pending').toLowerCase();
+  const [confirming, setConfirming] = useState(false);
+
+  const handleConfirm = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setConfirming(true);
+    try {
+      await onConfirm(inquiry.id);
+    } catch (err) {
+      alert(err.message || 'Failed to confirm');
+    } finally {
+      setConfirming(false);
+    }
+  };
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <button
-        type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3"
-      >
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-slate-900 truncate">{inquiry.name}</p>
           <p className="text-sm text-slate-500 truncate">{inquiry.email}</p>
@@ -31,13 +140,39 @@ function InquiryRow({ inquiry }) {
           </span>
           <span className="text-slate-400">·</span>
           <span>{formatDate(inquiry.date || inquiry.created_at)}</span>
-        </div>
-        {hasExtra && (
-          <span className="text-teal-600 text-sm font-medium shrink-0">
-            {expanded ? 'Less' : 'More'}
+          <span className={`inline-flex rounded-lg border px-2 py-0.5 text-xs font-medium ${statusColors[status] || statusColors.pending}`}>
+            {status}
           </span>
-        )}
-      </button>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onView(inquiry); }}
+            className="rounded-lg border border-slate-300 text-slate-700 px-3 py-1.5 text-sm font-medium hover:bg-slate-50"
+          >
+            View
+          </button>
+          {status === 'pending' && (
+            <button
+              type="button"
+              onClick={handleConfirm}
+              disabled={confirming}
+              className="rounded-lg bg-teal-600 text-white px-3 py-1.5 text-sm font-medium hover:bg-teal-700 disabled:opacity-50"
+            >
+              {confirming ? '...' : 'Confirm'}
+            </button>
+          )}
+          {hasExtra && (
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="text-teal-600 text-sm font-medium"
+            >
+              {expanded ? 'Less' : 'More'}
+            </button>
+          )}
+        </div>
+      </div>
       {expanded && hasExtra && (
         <div className="border-t border-slate-100 bg-slate-50/80 px-4 sm:px-5 py-4 text-sm space-y-2">
           {inquiry.phone && (
@@ -68,16 +203,28 @@ function InquiryRow({ inquiry }) {
 export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewInquiry, setViewInquiry] = useState(null);
+
+  const load = () => {
+    return fetch('/api/bookings')
+      .then((res) => res.json())
+      .then((data) => setInquiries(Array.isArray(data) ? data : []))
+      .catch(() => setInquiries([]));
+  };
 
   useEffect(() => {
-    fetch('/api/bookings')
-      .then((res) => res.json())
-      .then((data) => {
-        setInquiries(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    load().finally(() => setLoading(false));
   }, []);
+
+  const handleConfirm = async (id) => {
+    const res = await fetch('/api/bookings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'confirmed' }),
+    });
+    if (!res.ok) throw new Error('Failed to confirm booking');
+    await load();
+  };
 
   return (
     <AdminLayout>
@@ -108,11 +255,24 @@ export default function AdminInquiriesPage() {
           <div className="space-y-3">
             <p className="text-sm text-slate-500 mb-2">{inquiries.length} {inquiries.length === 1 ? 'inquiry' : 'inquiries'}</p>
             {inquiries.map((inquiry) => (
-              <InquiryRow key={inquiry.id} inquiry={inquiry} />
+              <InquiryRow
+                key={inquiry.id}
+                inquiry={inquiry}
+                onView={setViewInquiry}
+                onConfirm={handleConfirm}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {viewInquiry && (
+        <ViewInquiryModal
+          inquiry={viewInquiry}
+          onClose={() => setViewInquiry(null)}
+          onConfirm={handleConfirm}
+        />
+      )}
     </AdminLayout>
   );
 }

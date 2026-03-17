@@ -31,6 +31,19 @@ export default async function handler(req, res) {
     return;
   }
 
-  res.setHeader('Allow', ['GET', 'POST']);
+  if (req.method === 'PATCH') {
+    const { id, status } = req.body;
+    if (!id) return res.status(400).json({ error: 'id is required' });
+    const payload = {};
+    if (status !== undefined && ['pending', 'confirmed', 'cancelled'].includes(String(status))) {
+      payload.status = String(status);
+    }
+    if (Object.keys(payload).length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+    const { data, error } = await supabase.from('bookings').update(payload).eq('id', id).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(200).json(data);
+  }
+
+  res.setHeader('Allow', ['GET', 'POST', 'PATCH']);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }

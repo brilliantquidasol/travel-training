@@ -26,15 +26,21 @@ export default function SignInPage() {
       return;
     }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       setMessage({ type: 'error', text: error.message });
       return;
     }
     if (data?.user) {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single();
+      const isAdmin = profile?.role === 'admin';
+      setLoading(false);
       setMessage({ type: 'success', text: 'Signed in successfully. Redirecting...' });
-      const target = redirect.startsWith('/') ? redirect : '/';
-      setTimeout(() => router.push(target), 1000);
+      const target = redirect && redirect !== '/' ? redirect : (isAdmin ? '/admin/dashboard' : '/');
+      const finalTarget = target.startsWith('/') ? target : '/';
+      setTimeout(() => router.push(finalTarget), 1000);
+    } else {
+      setLoading(false);
     }
   };
 
