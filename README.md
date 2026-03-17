@@ -98,6 +98,12 @@ Open [http://localhost:3000](http://localhost:3000).
 1. Push to GitHub (already done).
 2. Go to [Vercel](https://vercel.com), import the GitHub repo.
 3. In **Project Settings → Environment Variables**, add:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Deploy. Vercel will use `vercel.json` and build the Next.js app.
+   - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon public key
+4. **Redeploy** after saving (Deployments → ⋮ → Redeploy) so the build uses the new env vars.
+5. In **Supabase**: run the RLS policies in `supabase-setup.sql` (see below) so the anon key can read data.
+
+### Live site shows no data?
+
+- **Env vars:** In Vercel → Project → Settings → Environment Variables, ensure both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set for Production (and Preview if needed). Then trigger a **Redeploy**.
+- **RLS:** Supabase uses Row Level Security. If you see no tours, run the RLS section of `supabase-setup.sql` in the Supabase SQL Editor (policies that allow public SELECT on `tours` and `bookings`).

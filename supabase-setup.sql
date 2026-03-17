@@ -29,3 +29,18 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 -- If you already had bookings without date, add the column:
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS date date;
+
+-- =============================================================================
+-- RLS: Allow public read (so live site and anon key can load tours/bookings)
+-- Run this if your live site shows no data.
+-- =============================================================================
+ALTER TABLE tours ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read tours" ON tours;
+CREATE POLICY "Allow public read tours" ON tours FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read bookings" ON bookings;
+CREATE POLICY "Allow public read bookings" ON bookings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow public insert bookings" ON bookings;
+CREATE POLICY "Allow public insert bookings" ON bookings FOR INSERT WITH CHECK (true);
