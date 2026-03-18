@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase';
+import { sendBookingApprovalEmail } from '../../lib/email';
 
 export default async function handler(req, res) {
   if (!supabase) {
@@ -7,10 +8,10 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { data, error } = await supabase
       .from('bookings')
-      .select('*, tour:tours(title)')
+      .select('*, tour:tours(title, price)')
       .order('created_at', { ascending: false, nullsFirst: false });
     if (error) {
-      const fallback = await supabase.from('bookings').select('*, tour:tours(title)').order('id', { ascending: false });
+      const fallback = await supabase.from('bookings').select('*, tour:tours(title, price)').order('id', { ascending: false });
       if (fallback.error) return res.status(500).json({ error: fallback.error.message });
       return res.status(200).json(fallback.data || []);
     }
@@ -43,8 +44,42 @@ export default async function handler(req, res) {
       payload.status = String(status);
     }
     if (Object.keys(payload).length === 0) return res.status(400).json({ error: 'No valid fields to update' });
-    const { data, error } = await supabase.from('bookings').update(payload).eq('id', id).select().single();
+    const { data, error } = await supabase
+      .from('bookings')
+      .update(payload)
+      .eq('id', id)
+      .select('*, tour:tours(title, price)')
+      .single();
     if (error) return res.status(500).json({ error: error.message });
+
+    if (payload.status === 'confirmed') {
+      const tourPrice = data.tour?.price != null && data.tour?.price !== '' ? Number(data.tour.price) : 0;
+      const orderPayload = {
+        customer_name: data.name || '',
+        customer_email: data.email || '',
+        tour_id: data.tour_id || null,
+        amount: tourPrice,
+        currency: 'USD',
+        status: 'pending',
+        notes: data.special_requests || null,
+      };
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([orderPayload])
+        .select()
+        .single();
+      if (!orderError && order) {
+        const origin = req.headers.origin || process.env.NEXT_PUBLIC_APP_URL || '';
+        const paymentUrl = origin ? `${origin}/pay/${order.id}` : `/pay/${order.id}`;
+        await sendBookingApprovalEmail({
+          to: data.email,
+          name: data.name,
+          paymentUrl,
+          tourTitle: data.tour?.title || 'Your tour',
+        });
+      }
+    }
+
     return res.status(200).json(data);
   }
 

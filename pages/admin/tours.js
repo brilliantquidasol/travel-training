@@ -99,11 +99,9 @@ export default function AdminToursPage() {
                         {tour.duration}
                       </span>
                     )}
-                    {tour.price != null && tour.price !== '' && (
-                      <span className="absolute top-3 right-3 rounded-lg bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-white">
-                        ${Number(tour.price).toLocaleString()}
-                      </span>
-                    )}
+                    <span className="absolute top-3 right-3 rounded-lg bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-white">
+                      {tour.price != null && tour.price !== '' ? `$${Number(tour.price).toLocaleString()}` : 'Price on request'}
+                    </span>
                   </div>
                 </Link>
                 <div className="p-4">

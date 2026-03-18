@@ -34,9 +34,9 @@ export default function TourDetails({ tour, hideHero = false }) {
             <h1 className="text-3xl md:text-4xl font-bold text-white">{tour.title}</h1>
             <div className="flex flex-wrap gap-4 mt-2 text-white/90">
               {tour.duration && <span>{tour.duration}</span>}
-              {tour.price != null && tour.price !== '' && (
-                <span className="font-semibold">From ${Number(tour.price).toLocaleString()}</span>
-              )}
+              <span className="font-semibold">
+                {tour.price != null && tour.price !== '' ? `From $${Number(tour.price).toLocaleString()}` : 'Price on request'}
+              </span>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function TourDetails({ tour, hideHero = false }) {
             {tour.booking_note || 'Enter your details below and we’ll confirm your booking and send you the next steps by email.'}
           </p>
           <div className="bg-white dark:bg-gray-800/80 backdrop-blur rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-left">
-            <BookingForm tourId={tour.id} />
+            <BookingForm tourId={tour.id} tourLabel={tour.title} tourPrice={tour.price} />
           </div>
         </div>
       </section>

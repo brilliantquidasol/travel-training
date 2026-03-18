@@ -182,6 +182,7 @@ export default function DestinationDetailPage({ destination }) {
               tourId={null}
               tourLabel={selectedTour?.title}
               destinationLabel={destination.title}
+              tourPrice={selectedTour?.price}
             />
           </div>
         </div>

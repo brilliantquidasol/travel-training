@@ -433,7 +433,7 @@ export default function Landing({ tours }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
                   <h3 className="text-xl font-bold text-white">{tour.title}</h3>
                   <div className="flex gap-4 text-white/90 text-sm mt-1">
-                    {tour.price != null && <span>${Number(tour.price).toLocaleString()}</span>}
+                    <span>{tour.price != null && tour.price !== '' ? `$${Number(tour.price).toLocaleString()}` : 'Price on request'}</span>
                     {tour.duration && <span>{tour.duration}</span>}
                   </div>
                   <span className="inline-block mt-4 btn-primary text-sm py-2 px-4 w-fit">

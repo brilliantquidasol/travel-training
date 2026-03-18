@@ -77,7 +77,7 @@ function Sidebar({ currentPath, onNavigate }) {
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -148,6 +148,13 @@ export default function AdminLayout({ children }) {
             >
               Account
             </Link>
+            <button
+              type="button"
+              onClick={() => signOut().then(() => router.push('/'))}
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Sign out
+            </button>
           </div>
         </header>
 

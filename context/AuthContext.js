@@ -24,21 +24,34 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    let cancelled = false;
+    const applySession = (session) => {
+      if (cancelled) return;
       setUser(session?.user ?? null);
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id).finally(() => {
+          if (!cancelled) setLoading(false);
+        });
       } else {
         setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
+    // Single initial load: getSession then subscribe (avoids lock contention with onAuthStateChange)
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id).then(() => setLoading(false));
-      else setLoading(false);
+      if (cancelled) return;
+      applySession(session);
+    }).catch(() => {
+      if (!cancelled) setLoading(false);
     });
-    return () => subscription?.unsubscribe();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
+      applySession(session);
+    });
+    return () => {
+      cancelled = true;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {

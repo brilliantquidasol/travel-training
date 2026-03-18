@@ -46,9 +46,9 @@ export default function TourDetailsPage({ tour, otherTours }) {
           </h1>
           <div className="flex flex-wrap justify-center gap-6 mt-6 text-white/90 text-base sm:text-lg">
             {tour.duration && <span>{tour.duration}</span>}
-            {tour.price != null && tour.price !== '' && (
-              <span className="font-semibold text-white">From ${Number(tour.price).toLocaleString()}</span>
-            )}
+            <span className="font-semibold text-white">
+              {tour.price != null && tour.price !== '' ? `From $${Number(tour.price).toLocaleString()}` : 'Price on request'}
+            </span>
           </div>
           <Link
             href="#book"

@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 
 const inputClass = 'w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent';
 
-export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
+export default function BookingForm({ tourId, tourLabel, destinationLabel, tourPrice }) {
   const prefix = [tourLabel, destinationLabel].filter(Boolean).length
     ? `Tour: ${tourLabel || '—'}, Destination: ${destinationLabel || '—'}\n\n`
     : '';
@@ -51,8 +51,15 @@ export default function BookingForm({ tourId, tourLabel, destinationLabel }) {
     resetForm();
   };
 
+  const priceStr = tourPrice != null && tourPrice !== '' ? new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(Number(tourPrice)) : null;
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {priceStr && (
+        <p className="text-lg font-semibold text-gray-900 dark:text-white">
+          From {priceStr} per person
+        </p>
+      )}
       <div>
         <label htmlFor="booking-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full name *</label>
         <input
