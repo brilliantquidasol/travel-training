@@ -53,6 +53,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 Replace with your Supabase URL and anon key.
 
+**Optional – booking confirmation emails**  
+When an admin confirms a booking, the app can email the customer a payment link. Add to `.env.local`:
+
+```
+RESEND_API_KEY=re_xxxx
+```
+
+Get a key at [resend.com](https://resend.com). Without it, confirmation still works (order is created, payment link exists) but no email is sent.
+
 ### 3. Install and run
 
 ```bash
